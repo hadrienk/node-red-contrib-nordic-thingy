@@ -39,6 +39,7 @@
     "thingy52": "^1.0.4"
   },
   "devDependencies": {
+    "@types/node-red": "^0.17.0",
     "tslint": "^5.8.0",
     "typescript": "^2.6.2"
   }
