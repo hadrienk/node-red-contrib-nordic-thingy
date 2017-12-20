@@ -4,7 +4,18 @@
   "description": "A node red node for the Nordic Thingy",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm run serve",
+    "build": "npm run build-sass && npm run build-ts && npm run tslint && npm run copy-static-assets",
+    "serve": "node dist/server.js",
+    "watch-node": "nodemon dist/server.js",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"Sass,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-sass\" \"npm run watch-ts\" \"npm run watch-node\"",
+    "test": "jest --forceExit",
+    "build-ts": "tsc",
+    "watch-ts": "tsc -w",
+    "build-sass": "node-sass src/public/css/main.scss dist/public/css/main.css",
+    "watch-sass": "node-sass -w src/public/css/main.scss dist/public/css/main.css",
+    "tslint": "tslint -c tslint.json -p tsconfig.json",
+    "copy-static-assets": "node copyStaticAssets.js"
   },
   "repository": {
     "type": "git",
@@ -26,5 +37,9 @@
   "homepage": "https://github.com/hadrienk/node-red-contrib-nordic-thingy#readme",
   "dependencies": {
     "thingy52": "^1.0.4"
+  },
+  "devDependencies": {
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.2"
   }
 }
