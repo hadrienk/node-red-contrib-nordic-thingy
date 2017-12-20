@@ -23,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/hadrienk/node-red-contrib-nordic-thingy/issues"
   },
-  "homepage": "https://github.com/hadrienk/node-red-contrib-nordic-thingy#readme"
+  "homepage": "https://github.com/hadrienk/node-red-contrib-nordic-thingy#readme",
+  "dependencies": {
+    "thingy52": "^1.0.4"
+  }
 }
