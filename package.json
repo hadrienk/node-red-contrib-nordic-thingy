@@ -1,0 +1,27 @@
+{
+  "name": "red-contrib-nordic-thingy",
+  "version": "1.0.0",
+  "description": "A node red node for the Nordic Thingy",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hadrienk/node-red-contrib-nordic-thingy.git"
+  },
+  "keywords": [
+    "nordic",
+    "thingy",
+    "node-red",
+    "ble",
+    "bluetooth",
+    "red"
+  ],
+  "author": "Hadrien Kohl",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/hadrienk/node-red-contrib-nordic-thingy/issues"
+  },
+  "homepage": "https://github.com/hadrienk/node-red-contrib-nordic-thingy#readme"
+}
