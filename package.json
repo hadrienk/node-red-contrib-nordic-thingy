@@ -2,20 +2,24 @@
   "name": "red-contrib-nordic-thingy",
   "version": "1.0.0",
   "description": "A node red node for the Nordic Thingy",
-  "main": "index.js",
   "scripts": {
     "start": "npm run serve",
     "build": "npm run build-sass && npm run build-ts && npm run tslint && npm run copy-static-assets",
     "serve": "node dist/server.js",
-    "watch-node": "nodemon dist/server.js",
-    "watch": "concurrently -k -p \"[{name}]\" -n \"Sass,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-sass\" \"npm run watch-ts\" \"npm run watch-node\"",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"Html,TypeScript\" -c \"yellow.bold,cyan.bold\" \"npm run watch-html\" \"npm run watch-ts\"",
     "test": "jest --forceExit",
     "build-ts": "tsc",
     "watch-ts": "tsc -w",
+    "watch-html": "cpx *.html dist/ --watch",
     "build-sass": "node-sass src/public/css/main.scss dist/public/css/main.css",
     "watch-sass": "node-sass -w src/public/css/main.scss dist/public/css/main.css",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
     "copy-static-assets": "node copyStaticAssets.js"
+  },
+  "node-red": {
+    "nodes": {
+      "nordic-thingy": "dist/NodeThingy.js"
+    }
   },
   "repository": {
     "type": "git",
@@ -36,10 +40,13 @@
   },
   "homepage": "https://github.com/hadrienk/node-red-contrib-nordic-thingy#readme",
   "dependencies": {
-    "thingy52": "^1.0.4"
+    "thingy52": "^1.0.4",
+    "tslib": "^1.8.1"
   },
   "devDependencies": {
     "@types/node-red": "^0.17.0",
+    "concurrently": "^3.5.1",
+    "cpx": "^1.5.0",
     "tslint": "^5.8.0",
     "typescript": "^2.6.2"
   }
