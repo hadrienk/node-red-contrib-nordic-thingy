@@ -1,0 +1,32 @@
+<script type="text/javascript">
+  RED.nodes.registerType('nordic-thingy', {
+    category: 'function',
+    color: '#a6bbcf',
+    defaults: {
+      name: {value: ""}
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "nordic.png",
+    label: function () {
+      return this.name || "Nordic Thingy 52";
+    }
+  });
+</script>
+
+<script type="text/x-red" data-template-name="nordic-thingy">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+
+</script>
+
+<script type="text/x-red" data-help-name="nordic-thingy">
+    <p>
+        A node that can extract data from the Nordic Thingy 52.
+    </p>
+
+
+</script>

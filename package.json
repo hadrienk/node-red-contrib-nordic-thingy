@@ -10,7 +10,7 @@
     "test": "jest --forceExit",
     "build-ts": "tsc",
     "watch-ts": "tsc -w",
-    "watch-html": "cpx *.html dist/ --watch",
+    "watch-html": "cpx \"static/**/*\" dist/ --watch",
     "build-sass": "node-sass src/public/css/main.scss dist/public/css/main.css",
     "watch-sass": "node-sass -w src/public/css/main.scss dist/public/css/main.css",
     "tslint": "tslint -c tslint.json -p tsconfig.json",
