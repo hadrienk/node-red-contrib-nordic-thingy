@@ -1,22 +1,21 @@
 import * as nodered from "node-red";
-import * as Thingy from "thingy52";
+import {ThingyManager} from "./ThingyManager";
+import {Thingy} from "./types/Thingy";
 
 
 interface ThingyNode extends nodered.Node {
-    thingy: any;
+
+    thingy: Thingy[];
 
     super();
+
 }
 
-abstract class TestNode implements ThingyNode {
-    ping() {
-        this.log("blabla");
-    }
-}
 interface ThingyNodeProps extends nodered.NodeProperties {
     config: nodered.NodeId;
 }
 
+const manager = new ThingyManager();
 
 export = (RED: nodered.Red) => {
     // Register the module.
@@ -25,48 +24,39 @@ export = (RED: nodered.Red) => {
     // RED.nodes.registerType("nordic-thingy", ThingyNode);
     // RED.nodes.registerType("nordic-thingy", clazz);
 
-    RED.nodes.registerType("nordic-thingy", function (this: TestNode, props: ThingyNodeProps) {
-
+    RED.nodes.registerType("nordic-thingy", function (this: ThingyNode, props: ThingyNodeProps) {
         RED.nodes.createNode(this, props);
-        const config = RED.nodes.getNode(props.config);
+
+        const nodeConfiguration = RED.nodes.getNode(props.config);
 
         this.status({fill: "blue", shape: "dot", text: "scanning..."});
+        manager.connect(this).then(([node, thingies]) => {
+            this.status({fill: "green", shape: "dot", text: "connected"});
+            this.thingy = thingies;
+            for (const connectedThingy of thingies) {
 
-        Thingy.discover(thingy => {
-
-            if (!thingy) {
-                this.error("invalid thingy instance");
-                return;
-            }
-
-            this.status({fill: "yellow", shape: "dot", text: "connecting..."});
-
-            // you'll need to call connect and set up
-            thingy.connectAndSetUp(error => {
-
-                if (error) {
-                    this.error("could not setup thingy connection");
-                    return;
-                }
-
-                this.status({fill: "green", shape: "dot", text: "connected"});
-
-                this.thingy = thingy;
-
-                // you can be notified of disconnects
-                thingy.on("disconnect", _ => {
+                connectedThingy.on("disconnected", () => {
+                    // you can be notified of disconnects
                     this.thingy = undefined;
                     this.status({fill: "blue", shape: "dot", text: "scanning..."});
                 });
 
-                thingy.on("rawNotif", data => {
-                    this.send({
-                        payload: data
-                    });
+                connectedThingy.euler_enable(error => {
+                    this.error("could not enable euler sensor", {payload: error});
+                });
+                connectedThingy.on("eulerNotif", data => {
+                    this.send({device: connectedThingy, payload: data});
                 });
 
-                thingy.raw_enable(error => this.error("could not enable raw"));
-            });
+                connectedThingy.on("orientationNotif", data => {
+                    this.send({device: connectedThingy, payload: data});
+                });
+
+                connectedThingy.on("rawNotif", data => {
+                    // you can be notified of disconnects
+                    this.send({device: connectedThingy, payload: data});
+                });
+            }
         });
 
         this.log("Something fantastic happened.");
@@ -92,18 +82,19 @@ export = (RED: nodered.Red) => {
         const node = RED.nodes.getNode(req.params.id);
         if (node != undefined && node.thingy != undefined) {
             try {
-                const thingy = node.thingy;
-                node.log("set mode");
-                thingy.speaker_mode_set(3, _ => {
-                    node.log("set mode done");
-                    const data = new Buffer(1);
-                    data.set([1]);
-                    node.log("write");
-                    thingy.speaker_pcm_write(data, _ => {
-                        node.log("write done");
-                        res.sendStatus(200);
+                for (const thingy of node.thingy) {
+                    node.log("set mode");
+                    thingy.speaker_mode_set(3, () => {
+                        node.log("set mode done");
+                        const data = new Buffer(1);
+                        data.set([1]);
+                        node.log("write");
+                        thingy.speaker_pcm_write(data, () => {
+                            node.log("write done");
+                            res.sendStatus(200);
+                        });
                     });
-                });
+                }
             } catch (err) {
                 res.sendStatus(500);
                 node.error(RED._("Ping failed", {error: err.toString()}));
