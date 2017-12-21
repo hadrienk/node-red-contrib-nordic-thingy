@@ -17,7 +17,7 @@
 //     | RotationEvent;
 
 
-import { NobleDevice } from "./NobleDevice";
+import {NobleDevice} from "./NobleDevice";
 
 export type ButtonState = "Pressed" | "Released";
 
@@ -32,11 +32,22 @@ export type DisconnectedEvent = "disconnect";
 export type ErrorHandler = (error: any) => void;
 export type Listener<T> = (data: T) => void;
 
+export type StepData = { steps: number, time: number };
+export type TapData = { direction: number, count: number };
+export type LightData = { red: number, green: number, blue: number, clear: number };
+export type GasData = { eco2: number, tvoc: number };
 export type QuaternionData = { w: number, x: number, y: number, z: number };
 export type EulerData = { roll: number, pitch: number, yaw: number };
 export type Coordinate = { x: number, y: number, z: number };
 export type RawData = { accelerometer: Coordinate, gyroscope: Coordinate, compass: Coordinate };
 export type OrientationData = number;
+export type RotationData = {
+    m_11: number, m_12: number, m_13: number,
+    m_21: number, m_22: number, m_23: number,
+    m_31: number, m_32: number, m_33: number,
+};
+export type GravityData = Coordinate;
+
 
 export declare function on(event: "rawNotif", listener: Listener<RawData>): void;
 export declare function on(event: "orientationNotif", listener: Listener<RawData>): void;
@@ -45,13 +56,36 @@ export declare function on(event: "quaternionNotif", listener: Listener<Quaterni
 
 export interface Thingy extends NobleDevice {
 
-    on(event: "rawNotif", listener: Listener<RawData>): void;
 
     on(event: "orientationNotif", listener: Listener<OrientationData>): void;
 
-    on(event: "eulerNotif", listener: Listener<EulerData>): void;
+    on(event: "temperatureNotif", listener: (temperature: number) => void): void;
+
+    on(event: "pressureNotif", listener: (pressure: number) => void): void;
+
+    on(event: "humidityNotif", listener: (humidity: number) => void): void;
+
+    on(event: "gasNotif", listener: (data: GasData) => void): void;
+
+    on(event: "colorNotif", listener: Listener<LightData>): void;
+
+    on(event: "buttonNotif", listener: Listener<ButtonState>): void;
+
+    on(event: "tapNotif", listener: Listener<TapData>): void;
 
     on(event: "quaternionNotif", listener: Listener<QuaternionData>): void;
+
+    on(event: "stepCounterNotif", listener: Listener<StepData>): void;
+
+    on(event: "rawNotif", listener: Listener<RawData>): void;
+
+    on(event: "eulerNotif", listener: Listener<EulerData>): void;
+
+    on(event: "rotationNotif", listener: Listener<RotationData>): void;
+
+    on(event: "headingNotif", listener: (heading: number) => void): void;
+
+    on(event: "gravityNotif", listener: Listener<GravityData>): void;
 
     on(event: string, listener: Function): void;
 
