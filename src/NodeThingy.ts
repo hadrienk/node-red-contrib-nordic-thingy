@@ -31,24 +31,25 @@ export = (RED: nodered.Red) => {
         this.manager = new ThingyManager(this, props);
         this.manager.connect();
 
-        // TODO: this.manager.disconnect();
 
         this.on("close", () => {
             this.debug("disconnecting the thingy");
-            this.thingy.disconnect();
+            this.manager.disconnect();
         });
     });
 
-    RED.httpAdmin.post("/nordic-thingy/:id/ping", RED.auth.needsPermission("thingy.ping"), function (req, res) {
+    RED.httpAdmin.post("/nordic-thingy/:id/ping", RED.auth.needsPermission("nordic-thingy.ping"), function (req, res) {
         const node = RED.nodes.getNode(req.params.id);
         if (node != undefined && node.manager != undefined) {
             try {
-                node.ping().then(() => {
+                node.manager.ping().then(() => {
                     res.sendStatus(200);
                 }).catch(error => {
+                    res.sendStatus(500);
                     node.error(RED._("Ping failed", {error: error.toString()}));
                 });
             } catch (err) {
+                res.sendStatus(500);
                 node.error(RED._("Ping failed", {error: err.toString()}));
             }
         } else {

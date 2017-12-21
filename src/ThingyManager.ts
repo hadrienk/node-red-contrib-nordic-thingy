@@ -199,6 +199,11 @@ export class ThingyManager {
         return Promise.all(this.thingies.map(thingy => this.pingThingy(thingy)));
     }
 
+    public disconnect() {
+        for (const thingy of this.thingies)
+            thingy.disconnect();
+    }
+
     private updateStatus() {
         // TODO: errors.
         const count = this.thingies.length;
