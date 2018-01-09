@@ -176,6 +176,10 @@ export interface Thingy extends NobleDevice {
 
     heading_disable(callback: ErrorHandler): void;
 
+    gravity_enable(callback: ErrorHandler): void;
+
+    gravity_disable(callback: ErrorHandler): void;
+
     // Sound
     mic_enable(callback: ErrorHandler): void;
 
