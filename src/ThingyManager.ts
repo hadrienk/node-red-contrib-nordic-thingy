@@ -1,5 +1,4 @@
-/// <reference path="types/Thingy.d.ts" />
-import {Thingy} from "./types/Thingy";
+import { Thingy, ThingyNode, ThingyNodeProps } from "./types/Thingy";
 
 /**
  * A manager class that binds the thingy and the node-red nodes.
@@ -210,26 +209,6 @@ export class ThingyManager {
         });
     }
 
-    private setupGravity(enabled: boolean, thingy: Thingy): Promise<any> {
-        return new Promise((resolve, reject) => {
-            if (enabled) {
-                thingy.gravity_enable(error => {
-                    if (error)
-                        reject(error);
-                    else
-                        resolve();
-                });
-            } else {
-                thingy.gravity_disable(error => {
-                    if (error)
-                        reject(error);
-                    else
-                        resolve();
-                });
-            }
-        });
-    }
-
     private setupRaw(enabled: boolean, thingy: Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
             if (enabled) {
@@ -311,7 +290,6 @@ export class ThingyManager {
     }
 
 
-
     private pingThingy(thingy: Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
             thingy.speaker_mode_set(3, error => {
@@ -371,7 +349,7 @@ export class ThingyManager {
                     resolve();
                 }
             });
-        })
+        });
 
     }
 
@@ -401,6 +379,7 @@ export class ThingyManager {
         thingy.on("gravityNotif", data => this.sendMessage(thingy, "gravity", data));
 
         return Promise.all([
+
             this.setupButton(configuration.button, thingy),
             this.setupGas(configuration.gas, thingy),
             this.setupPressure(configuration.pressure, thingy),
@@ -420,6 +399,7 @@ export class ThingyManager {
         ]).then(() => {
             this.thingies.push(thingy);
             this.updateStatus();
+            return thingy;
         });
     }
 
@@ -428,12 +408,12 @@ export class ThingyManager {
         this.configuration = configuration;
     }
 
-    public ping(): Promise<> {
+    public ping(): Promise<Thingy[]> {
         return Promise.all(this.thingies.map(thingy => this.pingThingy(thingy)));
     }
 
-    public removeAll() : Promise<void> {
-        return Promise.all(this.thingies.map(thingy => this.removeThingy(thingy)));
+    public removeAll(): Promise<void> {
+        return Promise.all(this.thingies.map(thingy => this.removeThingy(thingy))).then(() => {});
     }
 
     private updateStatus() {

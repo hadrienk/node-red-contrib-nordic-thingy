@@ -1,36 +1,11 @@
-// export type EventName =
-//     "pressureNotif"
-//     | "humidityNotif"
-//     | "gasNotif"
-//     | "colorNotif"
-//     | "buttonNotif"
-//     | "tapNotif"
-//     | "headingNotif"
-//     | "gravityNotif"
-//     | "speakerStatusNotif"
-//     | "MicrophoneNotif"
-//     | OrientationEvent
-//     | QuaternionEvent
-//     | StepEvent
-//     | RawEvent
-//     | EulerEvent
-//     | RotationEvent;
-
-
-import {NobleDevice} from "./NobleDevice";
+import { NobleDevice } from "./NobleDevice";
+import {ThingyManager} from "../ThingyManager";
+import * as nodered from "node-red";
 
 export type ButtonState = "Pressed" | "Released";
 
-export type StepEvent = "stepCounterNotif";
-export type QuaternionEvent = "quaternionNotif";
-export type EulerEvent = "eulerNotif";
-export type RawEvent = "rawNotif";
-export type OrientationEvent = "orientationNotif";
-export type RotationEvent = "rotationNotif";
-export type DisconnectedEvent = "disconnect";
-
 export type ErrorHandler = (error: any) => void;
-export type Listener<T> = (data: T) => void;
+export type Listener<T> = (data: T, ...args: any[]) => void;
 
 export type StepData = { steps: number, time: number };
 export type TapData = { direction: number, count: number };
@@ -46,48 +21,65 @@ export type RotationData = {
     m_21: number, m_22: number, m_23: number,
     m_31: number, m_32: number, m_33: number,
 };
+
 export type GravityData = Coordinate;
 
+export interface ThingyNode extends nodered.Node {
+    manager: ThingyManager;
+}
 
-export declare function on(event: "rawNotif", listener: Listener<RawData>): void;
-export declare function on(event: "orientationNotif", listener: Listener<RawData>): void;
-export declare function on(event: "eulerNotif", listener: Listener<EulerData>): void;
-export declare function on(event: "quaternionNotif", listener: Listener<QuaternionData>): void;
+export interface ThingyNodeProps extends nodered.NodeProperties {
+    config: nodered.NodeId;
+    temperature: boolean;
+    gas: boolean;
+    pressure: boolean;
+    humidity: boolean;
+    light: boolean;
+    button: boolean;
+
+    euler: boolean;
+    rotation: boolean;
+    heading: boolean;
+    gravity: boolean;
+    raw: boolean;
+    quaternion: boolean;
+    tap: boolean;
+    step: boolean;
+}
 
 export interface Thingy extends NobleDevice {
 
+    on(event: string | symbol, listener: (...args: any[]) => void): this;
 
-    on(event: "orientationNotif", listener: Listener<OrientationData>): void;
+    on(event: "orientationNotif", listener: Listener<OrientationData>): this;
 
-    on(event: "temperatureNotif", listener: (temperature: number) => void): void;
+    on(event: "temperatureNotif", listener: (temperature: number) => void): this;
 
-    on(event: "pressureNotif", listener: (pressure: number) => void): void;
+    on(event: "pressureNotif", listener: (pressure: number) => void): this;
 
-    on(event: "humidityNotif", listener: (humidity: number) => void): void;
+    on(event: "humidityNotif", listener: (humidity: number) => void): this;
 
-    on(event: "gasNotif", listener: (data: GasData) => void): void;
+    on(event: "gasNotif", listener: (data: GasData) => void): this;
 
-    on(event: "colorNotif", listener: Listener<LightData>): void;
+    on(event: "colorNotif", listener: Listener<LightData>): this;
 
-    on(event: "buttonNotif", listener: Listener<ButtonState>): void;
+    on(event: "buttonNotif", listener: Listener<ButtonState>): this;
 
-    on(event: "tapNotif", listener: Listener<TapData>): void;
+    on(event: "tapNotif", listener: Listener<TapData>): this;
 
-    on(event: "quaternionNotif", listener: Listener<QuaternionData>): void;
+    on(event: "quaternionNotif", listener: Listener<QuaternionData>): this;
 
-    on(event: "stepCounterNotif", listener: Listener<StepData>): void;
+    on(event: "stepCounterNotif", listener: Listener<StepData>): this;
 
-    on(event: "rawNotif", listener: Listener<RawData>): void;
+    on(event: "rawNotif", listener: Listener<RawData>): this;
 
-    on(event: "eulerNotif", listener: Listener<EulerData>): void;
+    on(event: "eulerNotif", listener: Listener<EulerData>): this;
 
-    on(event: "rotationNotif", listener: Listener<RotationData>): void;
+    on(event: "rotationNotif", listener: Listener<RotationData>): this;
 
-    on(event: "headingNotif", listener: (heading: number) => void): void;
+    on(event: "headingNotif", listener: (heading: number) => void): this;
 
-    on(event: "gravityNotif", listener: Listener<GravityData>): void;
-
-    on(event: string, listener: Function): void;
+    on(event: "gravityNotif", listener: Listener<GravityData>): this;
 
     gas_enable(callback: ErrorHandler): void;
 

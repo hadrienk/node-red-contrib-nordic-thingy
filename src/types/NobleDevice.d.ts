@@ -1,8 +1,13 @@
-export declare interface NobleDevice {
+import EventEmitter = NodeJS.EventEmitter;
+import { Peripheral } from "noble";
+
+export declare interface NobleDevice extends EventEmitter {
     id: string;
     uuid: string;
     address: string;
     addressType: string;
+
+    _peripheral: Peripheral;
 
     connect(callback: (error: any) => void): void;
 
@@ -20,5 +25,7 @@ export declare interface NobleDevice {
 
     // writeDataCharacteristic(serviceUuid: string, characteristicUuid: string, data: any,  callback: ErrorHandler);
 
-    on(event: "disconnected", listener: () => void): void;
+    on(event: string | symbol, listener: (...args: any[]) => void): this;
+
+    on(event: "disconnected", listener: (...args: any[]) => void): this;
 }
