@@ -1,10 +1,10 @@
 {
   "name": "red-contrib-nordic-thingy",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A node red node for the Nordic Thingy",
   "scripts": {
     "start": "npm run serve",
-    "build": "npm run build-ts && npm run tslint && npm run build-html",
+    "build": "npm run build-html && npm run build-ts && npm run tslint",
     "watch": "concurrently -k -p \"[{name}]\" -n \"Html,TypeScript\" -c \"yellow.bold,cyan.bold\" \"npm run watch-html\" \"npm run watch-ts\"",
     "test": "jest --forceExit",
     "build-ts": "tsc",

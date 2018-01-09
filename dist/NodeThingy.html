@@ -1,0 +1,215 @@
+<script type="text/javascript">
+  RED.nodes.registerType('nordic-thingy', {
+    category: 'function',
+    color: '#a6bbcf',
+    defaults: {
+      name: {value: ""},
+      temperature: {value: false},
+      gas: {value: false},
+      pressure: {value: false},
+      humidity: {value: false},
+      light: {value: false},
+      button: {value: false},
+
+      euler: {value: false},
+      rotation: {value: false},
+      heading: {value: false},
+      gravity: {value: false},
+      raw: {value: false},
+      quaternion: {value: false},
+      tap: {value: false},
+      step: {value: false}
+
+
+    },
+    inputs: 1,
+    outputs: 1,
+    icon: "nordic.png",
+    label: function () {
+      return this.name || "Nordic Thingy 52";
+    },
+    button: {
+      enabled: true,
+      onclick: function () {
+        $.ajax({
+          url: "nordic-thingy/" + this.id + "/ping",
+          type: "POST",
+          success: resp => {
+            RED.notify(this._("inject.success", {label: label}), "success");
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            if (jqXHR.status == 404) {
+              RED.notify(this._("common.notification.error", {message: this._("common.notification.errors.not-deployed")}), "error");
+            } else if (jqXHR.status == 500) {
+              RED.notify(this._("common.notification.error", {message: this._("inject.errors.failed")}), "error");
+            } else if (jqXHR.status == 0) {
+              RED.notify(this._("common.notification.error", {message: this._("common.notification.errors.no-response")}), "error");
+            } else {
+              RED.notify(this._("common.notification.error", {
+                message: this._("common.notification.errors.unexpected", {
+                  status: jqXHR.status,
+                  message: textStatus
+                })
+              }), "error");
+            }
+          }
+        });
+
+      }
+    }
+  });
+</script>
+
+<script type="text/x-red" data-template-name="nordic-thingy">
+    <div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+            <input type="text" id="node-input-name" placeholder="Name"/>
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Filter using name</label>
+            <input type="text" id="node-input-nameFilter" placeholder="Name"/>
+        </div>
+        <div class="form-row">
+            <label for="node-input-name"><i class="icon-tag"></i> Filter using UUID</label>
+            <input type="text" id="node-input-uuidFilter" placeholder="Name"/>
+        </div>
+        <h3>Sensor activation</h3>
+
+        <h4>Environment</h4>
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-temperature"/>
+            <label for="node-input-temperature"><i class="icon-tag"></i> Temperature</label>
+        </div>
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-gas"/>
+            <label for="node-input-gas"><i class="icon-tag"></i> Gas </label>
+        </div>
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-pressure"/>
+            <label for="node-input-pressure"><i class="icon-tag"></i> Pressure</label>
+        </div>
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-humidity"/>
+            <label for="node-input-humidity"><i class="icon-tag"></i> Humidity</label>
+        </div>
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-light"/>
+            <label for="node-input-light"><i class="icon-tag"></i> Light</label>
+        </div>
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-button"/>
+            <label for="node-input-button"><i class="icon-tag"></i> Button</label>
+        </div>
+
+        <div class="form-row">
+            <h4>Motion</h4>
+        </div>
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-euler"
+                   style="display: inline-block; width: auto; vertical-align: top;"/>
+            <label for="node-input-euler" style="width: 70%;">
+                <i class="icon-tag"/>Euler vector
+            </label>
+        </div>
+
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-gravity"
+                   style="display: inline-block; width: auto; vertical-align: top;"/>
+            <label for="node-input-gravity" style="width: 70%;">
+                <i class="icon-tag"/> Gravity vector
+            </label>
+        </div>
+
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-quaternion"
+                   style="display: inline-block; width: auto; vertical-align: top;"/>
+            <label for="node-input-quaternion" style="width: 70%;">
+                <i class="icon-tag"/> Quaternion vector
+            </label>
+        </div>
+
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-rotation"
+                   style="display: inline-block; width: auto; vertical-align: top;"/>
+            <label for="node-input-rotation" style="width: 70%;">
+                <i class="icon-tag"/> Rotation
+            </label>
+        </div>
+
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-heading"
+                   style="display: inline-block; width: auto; vertical-align: top;"/>
+            <label for="node-input-heading" style="width: 70%;">
+                <i class="icon-tag"/> Heading
+            </label>
+        </div>
+
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-tap"
+                   style="display: inline-block; width: auto; vertical-align: top;"/>
+            <label for="node-input-tap" style="width: 70%;">
+                <i class="icon-tag"/> Tap detection
+            </label>
+        </div>
+
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-step"
+                   style="display: inline-block; width: auto; vertical-align: top;"/>
+            <label for="node-input-step" style="width: 70%;">
+                <i class="icon-tag"/> Step vector
+            </label>
+        </div>
+
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-raw"
+                   style="display: inline-block; width: auto; vertical-align: top;"/>
+            <label for="node-input-raw" style="width: 70%;">
+                <i class="icon-tag"/> Raw motion data
+            </label>
+        </div>
+
+
+        <span>Steps counter</span>
+        <span>Tap detection</span>
+        <span>Orientation</span>
+        <span>Euler vector</span>
+        <span>Quaternion</span>
+        <span>Heading</span>
+        <span>Rotation matric</span>
+        <span>Raw data</span>
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="nordic-thingy">
+    <div>
+        <p>
+            A node that can extract data from the Nordic Thingy 52.
+        </p>
+        <h3>Outputs</h3>
+        <dl class="message-properties">
+            <dt>device
+                <span class="property-type">string</span>
+            </dt>
+            <dd> the device id of the thingy that generated the data.</dd>
+            <dt>payload
+                <span class="property-type">object</span>
+            </dt>
+            <dd>The data</dd>
+        </dl>
+    </div>
+</script>
