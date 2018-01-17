@@ -9,6 +9,30 @@ class ThingyManager {
         this.node = node;
         this.configuration = configuration;
     }
+    setupBattery(enabled, thingy) {
+        return new Promise((resolve, reject) => {
+            if (enabled) {
+                thingy.notifyBatteryLevel(error => {
+                    if (error) {
+                        reject();
+                    }
+                    else {
+                        resolve();
+                    }
+                });
+            }
+            else {
+                thingy.unnotifyBatteryLevel(error => {
+                    if (error) {
+                        reject();
+                    }
+                    else {
+                        resolve();
+                    }
+                });
+            }
+        });
+    }
     setupTemperature(enabled, thingy) {
         return new Promise((resolve, reject) => {
             if (enabled) {
@@ -322,6 +346,7 @@ class ThingyManager {
         if (idx > -1)
             this.thingies.splice(idx, 1);
         this.updateStatus();
+        thingy.removeAllListeners("batteryLevelChange");
         thingy.removeAllListeners("orientationNotif");
         thingy.removeAllListeners("temperatureNotif");
         thingy.removeAllListeners("pressureNotif");
@@ -352,6 +377,8 @@ class ThingyManager {
         thingy.once("disconnect", () => {
             this.removeThingy(thingy);
         });
+        thingy.readBatteryLevel(data => this.sendMessage(thingy, "battery", data));
+        thingy.on("batteryLevelChange", data => this.sendMessage(thingy, "battery", data));
         thingy.on("temperatureNotif", data => this.sendMessage(thingy, "temperature", data));
         thingy.on("pressureNotif", data => this.sendMessage(thingy, "pressure", data));
         thingy.on("humidityNotif", data => this.sendMessage(thingy, "humidity", data));
@@ -368,6 +395,7 @@ class ThingyManager {
         thingy.on("headingNotif", data => this.sendMessage(thingy, "heading", data));
         thingy.on("gravityNotif", data => this.sendMessage(thingy, "gravity", data));
         return Promise.all([
+            this.setupBattery(this.configuration.battery, thingy),
             this.setupButton(configuration.button, thingy),
             this.setupGas(configuration.gas, thingy),
             this.setupPressure(configuration.pressure, thingy),
@@ -395,7 +423,6 @@ class ThingyManager {
         return Promise.all(this.thingies.map(thingy => this.removeThingy(thingy))).then(() => { });
     }
     updateStatus() {
-        // TODO: errors.
         const count = this.thingies.length;
         if (count == 0) {
             this.node.status({ fill: "blue", shape: "dot", text: "scanning..." });

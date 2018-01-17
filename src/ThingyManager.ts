@@ -1,4 +1,6 @@
-import { Thingy, ThingyNode, ThingyNodeProps } from "./types/Thingy";
+import * as nodered from "node-red";
+import * as thingy52 from "thingy52";
+import { ThingyNode, ThingyNodeProps } from "./ThingyNode";
 
 /**
  * A manager class that binds the thingy and the node-red nodes.
@@ -7,9 +9,32 @@ export class ThingyManager {
 
     private configuration: ThingyNodeProps;
     private node: ThingyNode;
-    private thingies: Thingy[] = [];
+    private thingies: thingy52.Thingy[] = [];
 
-    private setupTemperature(enabled: boolean, thingy: Thingy): Promise<any> {
+    private setupBattery(enabled: boolean, thingy: thingy52.Thingy): Promise<any> {
+        return new Promise((resolve, reject) => {
+            if (enabled) {
+                thingy.notifyBatteryLevel(error => {
+                    if (error) {
+                        reject();
+                    } else {
+                        resolve();
+                    }
+                });
+            } else {
+                thingy.unnotifyBatteryLevel(error => {
+                    if (error) {
+                        reject();
+                    } else {
+                        resolve();
+                    }
+                });
+
+            }
+        });
+    }
+
+    private setupTemperature(enabled: boolean, thingy: thingy52.Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
             if (enabled) {
                 thingy.temperature_enable(error => {
@@ -29,7 +54,7 @@ export class ThingyManager {
         });
     }
 
-    private setupGas(enabled: boolean, thingy: Thingy): Promise<any> {
+    private setupGas(enabled: boolean, thingy: thingy52.Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
             if (enabled) {
                 thingy.gas_enable(error => {
@@ -49,7 +74,7 @@ export class ThingyManager {
         });
     }
 
-    private setupPressure(enabled: boolean, thingy: Thingy): Promise<any> {
+    private setupPressure(enabled: boolean, thingy: thingy52.Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
             if (enabled) {
                 thingy.pressure_enable(error => {
@@ -69,7 +94,7 @@ export class ThingyManager {
         });
     }
 
-    private setupHumidity(enabled: boolean, thingy: Thingy): Promise<any> {
+    private setupHumidity(enabled: boolean, thingy: thingy52.Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
             if (enabled) {
                 thingy.humidity_enable(error => {
@@ -89,7 +114,7 @@ export class ThingyManager {
         });
     }
 
-    private setupLight(enabled: boolean, thingy: Thingy): Promise<any> {
+    private setupLight(enabled: boolean, thingy: thingy52.Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
             if (enabled) {
                 thingy.color_enable(error => {
@@ -109,7 +134,7 @@ export class ThingyManager {
         });
     }
 
-    private setupButton(enabled: boolean, thingy: Thingy): Promise<any> {
+    private setupButton(enabled: boolean, thingy: thingy52.Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
             if (enabled) {
                 thingy.button_enable(error => {
@@ -129,7 +154,7 @@ export class ThingyManager {
         });
     }
 
-    private setupEuler(enabled: boolean, thingy: Thingy): Promise<any> {
+    private setupEuler(enabled: boolean, thingy: thingy52.Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
             if (enabled) {
                 thingy.euler_enable(error => {
@@ -149,7 +174,7 @@ export class ThingyManager {
         });
     }
 
-    private setupRotation(enabled: boolean, thingy: Thingy): Promise<any> {
+    private setupRotation(enabled: boolean, thingy: thingy52.Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
             if (enabled) {
                 thingy.rotation_enable(error => {
@@ -169,7 +194,7 @@ export class ThingyManager {
         });
     }
 
-    private setupHeading(enabled: boolean, thingy: Thingy): Promise<any> {
+    private setupHeading(enabled: boolean, thingy: thingy52.Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
             if (enabled) {
                 thingy.heading_enable(error => {
@@ -189,7 +214,7 @@ export class ThingyManager {
         });
     }
 
-    private setupGravity(enabled: boolean, thingy: Thingy): Promise<any> {
+    private setupGravity(enabled: boolean, thingy: thingy52.Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
             if (enabled) {
                 thingy.gravity_enable(error => {
@@ -209,7 +234,7 @@ export class ThingyManager {
         });
     }
 
-    private setupRaw(enabled: boolean, thingy: Thingy): Promise<any> {
+    private setupRaw(enabled: boolean, thingy: thingy52.Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
             if (enabled) {
                 thingy.raw_enable(error => {
@@ -229,7 +254,7 @@ export class ThingyManager {
         });
     }
 
-    private setupQuaternion(enabled: boolean, thingy: Thingy): Promise<any> {
+    private setupQuaternion(enabled: boolean, thingy: thingy52.Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
             if (enabled) {
                 thingy.quaternion_enable(error => {
@@ -249,7 +274,7 @@ export class ThingyManager {
         });
     }
 
-    private setupTap(enabled: boolean, thingy: Thingy): Promise<any> {
+    private setupTap(enabled: boolean, thingy: thingy52.Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
             if (enabled) {
                 thingy.tap_enable(error => {
@@ -269,7 +294,7 @@ export class ThingyManager {
         });
     }
 
-    private setupStep(enabled: boolean, thingy: Thingy): Promise<any> {
+    private setupStep(enabled: boolean, thingy: thingy52.Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
             if (enabled) {
                 thingy.stepCounter_enable(error => {
@@ -290,7 +315,7 @@ export class ThingyManager {
     }
 
 
-    private pingThingy(thingy: Thingy): Promise<any> {
+    private pingThingy(thingy: thingy52.Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
             thingy.speaker_mode_set(3, error => {
                 if (error) {
@@ -310,7 +335,7 @@ export class ThingyManager {
         });
     }
 
-    private sendMessage(device: Thingy, type: string, payload: any): void {
+    private sendMessage(device: thingy52.Thingy, type: string, payload: any): void {
         this.node.send({
             device: device,
             topic: type,
@@ -318,7 +343,7 @@ export class ThingyManager {
         });
     }
 
-    private removeThingy(thingy: Thingy): Promise<void> {
+    private removeThingy(thingy: thingy52.Thingy): Promise<void> {
 
         const idx = this.thingies.indexOf(thingy);
         if (idx > -1)
@@ -326,6 +351,7 @@ export class ThingyManager {
 
         this.updateStatus();
 
+        thingy.removeAllListeners("batteryLevelChange");
         thingy.removeAllListeners("orientationNotif");
         thingy.removeAllListeners("temperatureNotif");
         thingy.removeAllListeners("pressureNotif");
@@ -353,13 +379,15 @@ export class ThingyManager {
 
     }
 
-    public addThingy(thingy: Thingy): Promise<Thingy> {
+    public addThingy(thingy: thingy52.Thingy): Promise<thingy52.Thingy> {
         const configuration = this.configuration;
 
         thingy.once("disconnect", () => {
             this.removeThingy(thingy);
         });
 
+        thingy.readBatteryLevel(data => this.sendMessage(thingy, "battery", data));
+        thingy.on("batteryLevelChange", data => this.sendMessage(thingy, "battery", data));
         thingy.on("temperatureNotif", data => this.sendMessage(thingy, "temperature", data));
         thingy.on("pressureNotif", data => this.sendMessage(thingy, "pressure", data));
         thingy.on("humidityNotif", data => this.sendMessage(thingy, "humidity", data));
@@ -379,6 +407,8 @@ export class ThingyManager {
         thingy.on("gravityNotif", data => this.sendMessage(thingy, "gravity", data));
 
         return Promise.all([
+
+            this.setupBattery(this.configuration.battery, thingy),
 
             this.setupButton(configuration.button, thingy),
             this.setupGas(configuration.gas, thingy),
@@ -408,7 +438,7 @@ export class ThingyManager {
         this.configuration = configuration;
     }
 
-    public ping(): Promise<Thingy[]> {
+    public ping(): Promise<thingy52.Thingy[]> {
         return Promise.all(this.thingies.map(thingy => this.pingThingy(thingy)));
     }
 
@@ -417,7 +447,6 @@ export class ThingyManager {
     }
 
     private updateStatus() {
-        // TODO: errors.
         const count = this.thingies.length;
         if (count == 0) {
             this.node.status({fill: "blue", shape: "dot", text: "scanning..."});

@@ -1,13 +1,13 @@
 import * as nodered from "node-red";
 
 import { ThingyManager } from "./ThingyManager";
-import { Thingy, ThingyNode, ThingyNodeProps } from "Thingy";
 
-import * as thingyDevice from "thingy52";
+import * as thingy52 from "thingy52";
+import { ThingyNode, ThingyNodeProps } from "./ThingyNode";
 
 
 // We want to get duplicates
-thingyDevice.SCAN_DUPLICATES = false;
+thingy52.SCAN_DUPLICATES = true;
 
 export = (RED: nodered.Red) => {
 
@@ -16,7 +16,7 @@ export = (RED: nodered.Red) => {
 
         this.manager = new ThingyManager(this, props);
 
-        const discoverListener = (thingy: Thingy) => {
+        const discoverListener = (thingy: thingy52.Thingy) => {
             const state = thingy._peripheral.state;
             if (["disconnected", "disconnecting"].indexOf(state) < 0)
                 return;
@@ -26,14 +26,14 @@ export = (RED: nodered.Red) => {
                     console.error("could not connect to ", thingy);
                 } else {
                     this.manager.addThingy(thingy);
-                    thingyDevice.stopDiscoverAll(discoverListener);
+                    thingy52.stopDiscoverAll(discoverListener);
                 }
             });
-        }
-        thingyDevice.discoverAll(discoverListener);
+        };
+        thingy52.discoverAll(discoverListener);
 
         this.on("close", done => {
-            thingyDevice.stopDiscoverAll(discoverListener);
+            thingy52.stopDiscoverAll(discoverListener);
 
             this.manager.removeAll().then(() => {
                     done();
@@ -43,7 +43,7 @@ export = (RED: nodered.Red) => {
                 }
             );
 
-            this.manager = null;
+            this.manager = undefined;
         });
 
     });

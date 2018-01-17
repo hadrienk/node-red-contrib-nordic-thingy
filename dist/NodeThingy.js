@@ -1,8 +1,8 @@
 "use strict";
 const ThingyManager_1 = require("./ThingyManager");
-const thingyDevice = require("thingy52");
+const thingy52 = require("thingy52");
 // We want to get duplicates
-thingyDevice.SCAN_DUPLICATES = false;
+thingy52.SCAN_DUPLICATES = true;
 module.exports = (RED) => {
     RED.nodes.registerType("nordic-thingy", function (props) {
         RED.nodes.createNode(this, props);
@@ -17,20 +17,20 @@ module.exports = (RED) => {
                 }
                 else {
                     this.manager.addThingy(thingy);
-                    thingyDevice.stopDiscoverAll(discoverListener);
+                    thingy52.stopDiscoverAll(discoverListener);
                 }
             });
         };
-        thingyDevice.discoverAll(discoverListener);
+        thingy52.discoverAll(discoverListener);
         this.on("close", done => {
-            thingyDevice.stopDiscoverAll(discoverListener);
+            thingy52.stopDiscoverAll(discoverListener);
             this.manager.removeAll().then(() => {
                 done();
             }, err => {
                 console.error("could not disconnect all nodes", err);
                 done();
             });
-            this.manager = null;
+            this.manager = undefined;
         });
     });
     RED.httpAdmin.post("/nordic-thingy/:id/ping", RED.auth.needsPermission("nordic-thingy.ping"), function (req, res) {

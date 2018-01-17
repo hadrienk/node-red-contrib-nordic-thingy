@@ -4,6 +4,10 @@
     color: '#a6bbcf',
     defaults: {
       name: {value: ""},
+
+      battery: {value: false},
+      rssi: {value: false},
+
       temperature: {value: false},
       gas: {value: false},
       pressure: {value: false},
@@ -76,36 +80,71 @@
         </div>
         <h3>Sensor activation</h3>
 
-        <h4>Environment</h4>
         <div class="form-row">
-            <label>&nbsp;</label>
-            <input type="checkbox" id="node-input-temperature"/>
-            <label for="node-input-temperature"><i class="icon-tag"></i> Temperature</label>
+            <h4>General</h4>
         </div>
         <div class="form-row">
             <label>&nbsp;</label>
-            <input type="checkbox" id="node-input-gas"/>
+            <input type="checkbox" id="node-input-battery"
+                   style="display: inline-block; width: auto; vertical-align: top;"/>
+            <label for="node-input-battery" style="width: 70%;">
+                <i class="icon-tag"/>Battery level
+            </label>
+        </div>
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-rssi"
+                   style="display: inline-block; width: auto; vertical-align: top;"/>
+            <label for="node-input-rssi" style="width: 70%;">
+                <i class="icon-tag"/>Signal level (RSSI)
+            </label>
+        </div>
+
+        <div class="form-row">
+            <h4>Environment</h4>
+        </div>
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-temperature"
+                   style="display: inline-block; width: auto; vertical-align: top;"/>
+            <label for="node-input-temperature" style="width: 70%;">
+                <i class="icon-tag"/> Temperature</label>
+        </div>
+        <div class="form-row">
+            <label>&nbsp;</label>
+            <input type="checkbox" id="node-input-gas"
+                   style="display: inline-block; width: auto; vertical-align: top;"/>
             <label for="node-input-gas"><i class="icon-tag"></i> Gas </label>
         </div>
         <div class="form-row">
             <label>&nbsp;</label>
-            <input type="checkbox" id="node-input-pressure"/>
+            <input type="checkbox" id="node-input-pressure"
+                   style="display: inline-block; width: auto; vertical-align: top;"/>
             <label for="node-input-pressure"><i class="icon-tag"></i> Pressure</label>
         </div>
         <div class="form-row">
             <label>&nbsp;</label>
-            <input type="checkbox" id="node-input-humidity"/>
-            <label for="node-input-humidity"><i class="icon-tag"></i> Humidity</label>
+            <input type="checkbox" id="node-input-humidity"
+                   style="display: inline-block; width: auto; vertical-align: top;"/>
+            <label for="node-input-humidity" style="width: 70%;">
+                <i class="icon-tag"></i> Humidity
+            </label>
         </div>
         <div class="form-row">
             <label>&nbsp;</label>
-            <input type="checkbox" id="node-input-light"/>
-            <label for="node-input-light"><i class="icon-tag"></i> Light</label>
+            <input type="checkbox" id="node-input-light"
+                   style="display: inline-block; width: auto; vertical-align: top;"/>
+            <label for="node-input-light" style="width: 70%;">
+                <i class="icon-tag"></i> Light
+            </label>
         </div>
         <div class="form-row">
             <label>&nbsp;</label>
-            <input type="checkbox" id="node-input-button"/>
-            <label for="node-input-button"><i class="icon-tag"></i> Button</label>
+            <input type="checkbox" id="node-input-button"
+                   style="display: inline-block; width: auto; vertical-align: top;"/>
+            <label for="node-input-button" style="width: 70%;">
+                <i class="icon-tag"></i> Button
+            </label>
         </div>
 
         <div class="form-row">
@@ -182,16 +221,6 @@
                 <i class="icon-tag"/> Raw motion data
             </label>
         </div>
-
-
-        <span>Steps counter</span>
-        <span>Tap detection</span>
-        <span>Orientation</span>
-        <span>Euler vector</span>
-        <span>Quaternion</span>
-        <span>Heading</span>
-        <span>Rotation matric</span>
-        <span>Raw data</span>
     </div>
 </script>
 

@@ -1,6 +1,8 @@
 import { NobleDevice } from "./NobleDevice";
-import {ThingyManager} from "../ThingyManager";
-import * as nodered from "node-red";
+
+export declare let SCAN_DUPLICATES: boolean;
+export declare function discoverAll(callback: (thingy: Thingy) => void): void;
+export declare function stopDiscoverAll(callback: (thingy: Thingy) => void): void;
 
 export type ButtonState = "Pressed" | "Released";
 
@@ -24,30 +26,7 @@ export type RotationData = {
 
 export type GravityData = Coordinate;
 
-export interface ThingyNode extends nodered.Node {
-    manager: ThingyManager;
-}
-
-export interface ThingyNodeProps extends nodered.NodeProperties {
-    config: nodered.NodeId;
-    temperature: boolean;
-    gas: boolean;
-    pressure: boolean;
-    humidity: boolean;
-    light: boolean;
-    button: boolean;
-
-    euler: boolean;
-    rotation: boolean;
-    heading: boolean;
-    gravity: boolean;
-    raw: boolean;
-    quaternion: boolean;
-    tap: boolean;
-    step: boolean;
-}
-
-export interface Thingy extends NobleDevice {
+interface Thingy extends NobleDevice {
 
     on(event: string | symbol, listener: (...args: any[]) => void): this;
 
@@ -187,3 +166,6 @@ export interface Thingy extends NobleDevice {
 
     speaker_pcm_write(pcb: any, callback: ErrorHandler): void;
 }
+
+
+
