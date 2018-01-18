@@ -321,7 +321,7 @@ class ThingyManager {
                 }
                 else {
                     const data = new Buffer(1);
-                    data.set([1]);
+                    data.set([0]);
                     thingy.speaker_pcm_write(data, error => {
                         if (error) {
                             reject(error);
@@ -377,7 +377,7 @@ class ThingyManager {
         thingy.once("disconnect", () => {
             this.removeThingy(thingy);
         });
-        thingy.readBatteryLevel(data => this.sendMessage(thingy, "battery", data));
+        // thingy.readBatteryLevel(data => this.sendMessage(thingy, "battery", data));
         thingy.on("batteryLevelChange", data => this.sendMessage(thingy, "battery", data));
         thingy.on("temperatureNotif", data => this.sendMessage(thingy, "temperature", data));
         thingy.on("pressureNotif", data => this.sendMessage(thingy, "pressure", data));

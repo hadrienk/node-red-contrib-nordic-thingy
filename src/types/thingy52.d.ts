@@ -1,6 +1,7 @@
 import { NobleDevice } from "./NobleDevice";
 
-export declare let SCAN_DUPLICATES: boolean;
+// export declare let SCAN_DUPLICATES: boolean;
+
 export declare function discoverAll(callback: (thingy: Thingy) => void): void;
 export declare function stopDiscoverAll(callback: (thingy: Thingy) => void): void;
 
@@ -165,6 +166,10 @@ interface Thingy extends NobleDevice {
     speaker_mode_set(speaker_mode: number, callback: ErrorHandler): void;
 
     speaker_pcm_write(pcb: any, callback: ErrorHandler): void;
+
+    notifyBatteryLevel(callback: ErrorHandler): void;
+
+    unnotifyBatteryLevel(callback: ErrorHandler): void;
 }
 
 
