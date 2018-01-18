@@ -41,9 +41,7 @@ export = (RED: nodered.Red) => {
                     console.error("could not disconnect all nodes", err);
                     done();
                 }
-            );
-
-            this.manager = undefined;
+            ).then(() => this.manager = undefined);
         });
 
     });
