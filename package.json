@@ -1,6 +1,6 @@
 {
   "name": "red-contrib-nordic-thingy",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A node red node for the Nordic Thingy",
   "scripts": {
     "start": "npm run serve",
@@ -37,9 +37,11 @@
   },
   "homepage": "https://github.com/hadrienk/node-red-contrib-nordic-thingy#readme",
   "dependencies": {
+    "color-convert": "^1.9.1",
     "thingy52": "^1.0.4"
   },
   "devDependencies": {
+    "@types/color-convert": "^1.9.0",
     "@types/noble": "0.0.34",
     "@types/node-red": "^0.17.0",
     "concurrently": "^3.5.1",

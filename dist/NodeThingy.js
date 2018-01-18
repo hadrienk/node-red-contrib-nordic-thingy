@@ -29,8 +29,7 @@ module.exports = (RED) => {
             }, err => {
                 console.error("could not disconnect all nodes", err);
                 done();
-            });
-            this.manager = undefined;
+            }).then(() => this.manager = undefined);
         });
     });
     RED.httpAdmin.post("/nordic-thingy/:id/ping", RED.auth.needsPermission("nordic-thingy.ping"), function (req, res) {

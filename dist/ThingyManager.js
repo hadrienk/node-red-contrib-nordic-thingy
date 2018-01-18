@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const colorConvert = require("color-convert");
 /**
  * A manager class that binds the thingy and the node-red nodes.
  */
@@ -311,6 +312,26 @@ class ThingyManager {
                         resolve();
                 });
             }
+        });
+    }
+    /**
+     * Set the color of the thingy.
+     *
+     * @param {Thingy} thingy
+     * @param {string} color in hex format, ex. #FF00EE
+     * @returns {Promise<ThingyManager>}
+     */
+    setLedColor(thingy, color) {
+        return new Promise((resolve, reject) => {
+            const [r, g, b] = colorConvert.hex.rgb(color);
+            thingy.led_set({ r, g, b }, error => {
+                if (!error) {
+                    resolve(this);
+                }
+                else {
+                    reject(error);
+                }
+            });
         });
     }
     pingThingy(thingy) {

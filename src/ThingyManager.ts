@@ -1,5 +1,6 @@
 import * as nodered from "node-red";
 import * as thingy52 from "thingy52";
+import * as colorConvert from "color-convert";
 import { ThingyNode, ThingyNodeProps } from "./ThingyNode";
 
 /**
@@ -314,11 +315,25 @@ export class ThingyManager {
         });
     }
 
-    private setLed(thingy: thingy52.Thingy, color: ): Promise<ThingyManager> {
+    /**
+     * Set the color of the thingy.
+     *
+     * @param {Thingy} thingy
+     * @param {string} color in hex format, ex. #FF00EE
+     * @returns {Promise<ThingyManager>}
+     */
+    private setLedColor(thingy: thingy52.Thingy, color: string): Promise<ThingyManager> {
         return new Promise<ThingyManager>((resolve, reject) => {
-
+            const [r, g, b] = colorConvert.hex.rgb(color);
+            thingy.led_set({r, g, b}, error => {
+                if (!error) {
+                    resolve(this);
+                } else {
+                    reject(error);
+                }
+            });
         });
-    };
+    }
 
     private pingThingy(thingy: thingy52.Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
