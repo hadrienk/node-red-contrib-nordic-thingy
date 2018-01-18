@@ -5,9 +5,33 @@ import { ThingyManager } from "./ThingyManager";
 import * as thingy52 from "thingy52";
 import { ThingyNode, ThingyNodeProps } from "./ThingyNode";
 
+/**
+ * Scan for a device with timeout.
+ * @param {(device: Thingy) => boolean} filter
+ * @param {number} timeout
+ * @returns {Promise<Thingy>}
+ */
+function discover(filter: (device: thingy52.Thingy) => boolean, timeout: number): Promise<thingy52.Thingy> {
+    return new Promise((resolve, reject) => {
 
-// We want to get duplicates
-thingy52.SCAN_DUPLICATES = true;
+        const onDiscoverWithFilter = function(device: thingy52.Thingy) {
+            if (filter(device)) {
+                thingy52.stopDiscoverAll(onDiscoverWithFilter);
+                resolve(device);
+                clearTimeout(timeoutHandle);
+            }
+        };
+
+        const timeoutHandle = setTimeout(() => {
+            reject(new Error("timeout"));
+            thingy52.stopDiscoverAll(onDiscoverWithFilter);
+        }, timeout);
+
+        // We want to get duplicates
+        //thingy52.SCAN_DUPLICATES = true;
+        thingy52.discoverAll(onDiscoverWithFilter);
+    });
+}
 
 export = (RED: nodered.Red) => {
 
@@ -16,32 +40,60 @@ export = (RED: nodered.Red) => {
 
         this.manager = new ThingyManager(this, props);
 
-        const discoverListener = (thingy: thingy52.Thingy) => {
-            const state = thingy._peripheral.state;
-            if (["disconnected", "disconnecting"].indexOf(state) < 0)
-                return;
+        // Periodically scan for new thingies.
+        const scanDelay = 5000;
+        const timeout = 10000;
 
-            thingy.connectAndSetUp(error => {
-                if (error) {
-                    console.error("could not connect to ", thingy);
-                } else {
-                    this.manager.addThingy(thingy);
-                    thingy52.stopDiscoverAll(discoverListener);
-                }
+        const manager = this.manager;
+        let scanHandle = setTimeout(function scan() {
+
+            manager.updateStatus(true);
+
+            discover(thingy => {
+                // Ignore already connected thingy.
+                const state = thingy._peripheral.state;
+                if (["disconnected", "disconnecting"].indexOf(state) < 0)
+                    return false;
+
+                const name = thingy._peripheral.advertisement.localName;
+                if (name.toLowerCase().indexOf("flokk") > -1)
+                    return true;
+
+                return false;
+
+            }, timeout).then(thingy => {
+                return new Promise<thingy52.Thingy>((resolve, reject) => {
+                    thingy.connectAndSetUp(error => {
+                        if (error)
+                            reject(error);
+                        else
+                            resolve(thingy);
+                    });
+                }).then(thingy => manager.addThingy(thingy), undefined);
+            }, reason => {
+                console.debug("no thingy found: ", reason.toString());
+            }).then(undefined, reason => {
+                console.warn("could not connect to thingy: ", reason);
+            }).then(() => {
+                manager.updateStatus(false);
+                scanHandle = setTimeout(scan, timeout);
             });
-        };
-        thingy52.discoverAll(discoverListener);
+
+        }, scanDelay);
 
         this.on("close", done => {
-            thingy52.stopDiscoverAll(discoverListener);
-
             this.manager.removeAll().then(() => {
                     done();
                 }, err => {
                     console.error("could not disconnect all nodes", err);
                     done();
                 }
-            ).then(() => this.manager = undefined);
+            ).then(() => {
+                // Stop discovering.
+                clearTimeout(scanHandle);
+
+                this.manager = undefined;
+            });
         });
 
     });

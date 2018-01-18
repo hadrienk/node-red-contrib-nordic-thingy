@@ -15,7 +15,7 @@ class ThingyManager {
             if (enabled) {
                 thingy.notifyBatteryLevel(error => {
                     if (error) {
-                        reject();
+                        reject(error);
                     }
                     else {
                         resolve();
@@ -25,7 +25,7 @@ class ThingyManager {
             else {
                 thingy.unnotifyBatteryLevel(error => {
                     if (error) {
-                        reject();
+                        reject(error);
                     }
                     else {
                         resolve();
@@ -443,17 +443,17 @@ class ThingyManager {
     removeAll() {
         return Promise.all(this.thingies.map(thingy => this.removeThingy(thingy))).then(() => { });
     }
-    updateStatus() {
+    updateStatus(scanning = false) {
         const count = this.thingies.length;
         if (count == 0) {
-            this.node.status({ fill: "blue", shape: "dot", text: "scanning..." });
+            this.node.status({ fill: "blue", shape: "dot", text: `no thingy found${scanning ? "(scanning)" : ""}` });
         }
         else {
             if (count > 1) {
-                this.node.status({ fill: "green", shape: "dot", text: `${count} thingies connected` });
+                this.node.status({ fill: "green", shape: "dot", text: `${count} thingies connected${scanning ? "(scanning)" : ""}` });
             }
             else {
-                this.node.status({ fill: "green", shape: "dot", text: "1 thingy connected" });
+                this.node.status({ fill: "green", shape: "dot", text: `${count} thingy connected ${scanning ? "(scanning)" : ""}` });
             }
         }
     }
