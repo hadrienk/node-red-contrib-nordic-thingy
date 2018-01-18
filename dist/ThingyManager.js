@@ -395,7 +395,7 @@ class ThingyManager {
         thingy.on("headingNotif", data => this.sendMessage(thingy, "heading", data));
         thingy.on("gravityNotif", data => this.sendMessage(thingy, "gravity", data));
         return Promise.all([
-            this.setupBattery(this.configuration.battery, thingy),
+            this.configuration.battery ? this.setupBattery(this.configuration.battery, thingy) : Promise.resolve(),
             this.setupButton(configuration.button, thingy),
             this.setupGas(configuration.gas, thingy),
             this.setupPressure(configuration.pressure, thingy),

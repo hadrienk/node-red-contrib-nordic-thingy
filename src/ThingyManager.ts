@@ -414,7 +414,7 @@ export class ThingyManager {
 
         return Promise.all([
 
-            this.setupBattery(this.configuration.battery, thingy),
+            this.configuration.battery ? this.setupBattery(this.configuration.battery, thingy) : Promise.resolve(),
 
             this.setupButton(configuration.button, thingy),
             this.setupGas(configuration.gas, thingy),
