@@ -1,6 +1,8 @@
 # node-red-contrib-nordic-thingy
 
-A node red node that lets you use the Thingy - a multi-sensor Bluetooth development kit from NordicSemi - inside you IOT projects.
+NordicSemi Thingy nodes for node-red.
+
+This node lets you use the Thingy - a multi-sensor Bluetooth development kit from NordicSemi - inside you IOT projects.
 
 ![Nordi Thingy 52](https://www.nordicsemi.com/var/ezwebin_site/storage/images/media/images/products/nordic-thingy-52/2129008-1-eng-GB/Nordic-Thingy-52_imagelarge.jpg)
 
