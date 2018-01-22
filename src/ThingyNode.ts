@@ -8,6 +8,11 @@ export interface ThingyNode extends nodered.Node {
 export interface ThingyNodeProps extends nodered.NodeProperties {
     config: nodered.NodeId;
 
+    scanTimeout: number;
+    scanInterval: number;
+
+    filter: string;
+
     battery: boolean;
     rssi: boolean;
     temperature: boolean;

@@ -28,7 +28,6 @@ function discover(filter: (device: thingy52.Thingy) => boolean, timeout: number)
         }, timeout);
 
         // We want to get duplicates
-        //thingy52.SCAN_DUPLICATES = true;
         thingy52.discoverAll(onDiscoverWithFilter);
     });
 }
@@ -56,10 +55,7 @@ export = (RED: nodered.Red) => {
                     return false;
 
                 const name = thingy._peripheral.advertisement.localName;
-                if (name.toLowerCase().indexOf("flokk") > -1)
-                    return true;
-
-                return false;
+                return name.toLowerCase().indexOf("flokk") > -1;
 
             }, timeout).then(thingy => {
                 return new Promise<thingy52.Thingy>((resolve, reject) => {
@@ -82,17 +78,11 @@ export = (RED: nodered.Red) => {
         }, scanDelay);
 
         this.on("close", done => {
-            this.manager.removeAll().then(() => {
-                    done();
-                }, err => {
-                    console.error("could not disconnect all nodes", err);
-                    done();
-                }
-            ).then(() => {
+            this.manager.removeAll().then(undefined, err => console.error("could not disconnect all nodes", err)).then(() => {
                 // Stop discovering.
-                clearTimeout(scanHandle);
-
                 this.manager = undefined;
+                clearTimeout(scanHandle);
+                done();
             });
         });
 

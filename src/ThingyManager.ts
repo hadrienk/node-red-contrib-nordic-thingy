@@ -406,8 +406,6 @@ export class ThingyManager {
             this.removeThingy(thingy);
         });
 
-        // thingy.readBatteryLevel(data => this.sendMessage(thingy, "battery", data));
-
         thingy.on("batteryLevelChange", data => this.sendMessage(thingy, "battery", data));
         thingy.on("temperatureNotif", data => this.sendMessage(thingy, "temperature", data));
         thingy.on("pressureNotif", data => this.sendMessage(thingy, "pressure", data));
@@ -421,7 +419,11 @@ export class ThingyManager {
 
         thingy.on("quaternionNotif", data => this.sendMessage(thingy, "quaternion", data));
         thingy.on("orientationNotif", data => this.sendMessage(thingy, "orientation", data));
-        thingy.on("rawNotif", data => this.sendMessage(thingy, "raw", data));
+        thingy.on("rawNotif", data => {
+            this.sendMessage(thingy, "accelerometer", data.accelerometer);
+            this.sendMessage(thingy, "compass", data.compass);
+            this.sendMessage(thingy, "gyroscope", data.gyroscope);
+        });
         thingy.on("eulerNotif", data => this.sendMessage(thingy, "euler", data));
         thingy.on("rotationNotif", data => this.sendMessage(thingy, "rotation", data));
         thingy.on("headingNotif", data => this.sendMessage(thingy, "heading", data));
@@ -430,7 +432,7 @@ export class ThingyManager {
         return Promise.all([
 
             this.configuration.battery ? this.setupBattery(this.configuration.battery, thingy) : Promise.resolve(),
-            
+
             this.setupButton(configuration.button, thingy),
             this.setupGas(configuration.gas, thingy),
             this.setupPressure(configuration.pressure, thingy),
@@ -467,7 +469,7 @@ export class ThingyManager {
         return Promise.all(this.thingies.map(thingy => this.removeThingy(thingy))).then(() => {});
     }
 
-    public updateStatus(scanning? : boolean = false) {
+    public updateStatus(scanning: boolean = false) {
         const count = this.thingies.length;
         if (count == 0) {
             this.node.status({fill: "blue", shape: "dot", text: `no thingy found${scanning ? "(scanning)" : ""}` });
