@@ -466,7 +466,7 @@ export class ThingyManager {
     }
 
     public removeAll(): Promise<void> {
-        return Promise.all(this.thingies.map(thingy => this.removeThingy(thingy))).then(() => {});
+        return Promise.all(this.thingies.slice().map(thingy => this.removeThingy(thingy))).then(() => {});
     }
 
     public updateStatus(scanning: boolean = false) {

@@ -444,7 +444,7 @@ class ThingyManager {
         return Promise.all(this.thingies.map(thingy => this.pingThingy(thingy)));
     }
     removeAll() {
-        return Promise.all(this.thingies.map(thingy => this.removeThingy(thingy))).then(() => { });
+        return Promise.all(this.thingies.slice().map(thingy => this.removeThingy(thingy))).then(() => { });
     }
     updateStatus(scanning = false) {
         const count = this.thingies.length;

@@ -12,15 +12,14 @@ function discover(filter, timeout) {
         const onDiscoverWithFilter = function (device) {
             if (filter(device)) {
                 thingy52.stopDiscoverAll(onDiscoverWithFilter);
-                resolve(device);
                 clearTimeout(timeoutHandle);
+                resolve(device);
             }
         };
         const timeoutHandle = setTimeout(() => {
-            reject(new Error("timeout"));
             thingy52.stopDiscoverAll(onDiscoverWithFilter);
+            reject(new Error("timeout"));
         }, timeout);
-        // We want to get duplicates
         thingy52.discoverAll(onDiscoverWithFilter);
     });
 }
@@ -31,6 +30,7 @@ module.exports = (RED) => {
         // Periodically scan for new thingies.
         const scanDelay = 5000;
         const timeout = 10000;
+        const node = this;
         const manager = this.manager;
         let scanHandle = setTimeout(function scan() {
             manager.updateStatus(true);
@@ -49,21 +49,28 @@ module.exports = (RED) => {
                         else
                             resolve(thingy);
                     });
-                }).then(thingy => manager.addThingy(thingy), undefined);
+                }).then(thingy => {
+                    if (manager)
+                        manager.addThingy(thingy);
+                }, undefined);
             }, reason => {
-                console.debug("no thingy found: ", reason.toString());
+                node.debug("no thingy found: ", reason.toString());
             }).then(undefined, reason => {
-                console.warn("could not connect to thingy: ", reason);
+                node.warn("could not connect to thingy: ", reason);
             }).then(() => {
-                manager.updateStatus(false);
-                scanHandle = setTimeout(scan, timeout);
+                if (manager) {
+                    manager.updateStatus(false);
+                    scanHandle = setTimeout(scan, timeout);
+                }
             });
         }, scanDelay);
         this.on("close", done => {
-            this.manager.removeAll().then(undefined, err => console.error("could not disconnect all nodes", err)).then(() => {
+            const manager = this.manager;
+            this.manager = null;
+            clearTimeout(scanHandle);
+            manager.removeAll().then(undefined, err => console.error("could not disconnect all nodes", err)).then(() => {
                 // Stop discovering.
-                this.manager = undefined;
-                clearTimeout(scanHandle);
+                manager.updateStatus(false);
                 done();
             });
         });
