@@ -50,7 +50,7 @@ module.exports = (RED) => {
                             resolve(thingy);
                     });
                 }).then(thingy => {
-                    if (manager)
+                    if (this.manager)
                         manager.addThingy(thingy);
                 }, undefined);
             }, reason => {
@@ -58,7 +58,7 @@ module.exports = (RED) => {
             }).then(undefined, reason => {
                 node.warn("could not connect to thingy: ", reason);
             }).then(() => {
-                if (manager) {
+                if (this.manager) {
                     manager.updateStatus(false);
                     scanHandle = setTimeout(scan, timeout);
                 }

@@ -66,14 +66,14 @@ export = (RED: nodered.Red) => {
                             resolve(thingy);
                     });
                 }).then(thingy => {
-                    if (manager) manager.addThingy(thingy);
+                    if (this.manager) manager.addThingy(thingy);
                 }, undefined);
             }, reason => {
                 node.debug("no thingy found: ", reason.toString());
             }).then(undefined, reason => {
                 node.warn("could not connect to thingy: ", reason);
             }).then(() => {
-                if (manager) {
+                if (this.manager) {
                     manager.updateStatus(false);
                     scanHandle = setTimeout(scan, timeout);
                 }
