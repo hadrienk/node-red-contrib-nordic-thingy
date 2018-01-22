@@ -49,7 +49,7 @@ class ThingyScanner extends events_1.EventEmitter {
         this.scan = () => {
             if (!this.cancelled) {
                 this.emit("scanning", true);
-                this.discover(this.filter).then(thingy => {
+                this.discover().then(thingy => {
                     this.emit("discovered", thingy);
                 }, error => {
                     if (error instanceof ScanTimeout)

@@ -419,7 +419,10 @@ class ThingyManager {
         thingy.on("headingNotif", data => this.sendMessage(thingy, "heading", data));
         thingy.on("gravityNotif", data => this.sendMessage(thingy, "gravity", data));
         return Promise.all([
-            this.configuration.battery ? this.setupBattery(this.configuration.battery, thingy) : Promise.resolve(),
+            // Bug in the thingy lib. Need to enable first to avoid error.
+            this.setupBattery(true, thingy).then(() => {
+                return this.setupBattery(this.configuration.battery, thingy);
+            }),
             this.setupButton(configuration.button, thingy),
             this.setupGas(configuration.gas, thingy),
             this.setupPressure(configuration.pressure, thingy),
