@@ -27,6 +27,10 @@ class ThingyScanner extends events_1.EventEmitter {
                         thingy52.stopDiscoverAll(onDiscoverWithFilter);
                     }
                     else {
+                        // Avoid connecting twice.
+                        const state = device._peripheral.state;
+                        if (["connected", "connecting"].indexOf(state) > -1)
+                            return;
                         if (this.filter(device)) {
                             clearTimeout(this.timeoutHandle);
                             thingy52.stopDiscoverAll(onDiscoverWithFilter);

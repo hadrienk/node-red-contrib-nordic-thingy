@@ -2,6 +2,7 @@ import * as thingy52 from "thingy52";
 import { EventEmitter } from "events";
 import Timer = NodeJS.Timer;
 import { ThingyNode } from "./ThingyNode";
+import {setInterval} from "timers";
 
 export type Filter = (device: thingy52.Thingy) => boolean;
 
@@ -50,6 +51,11 @@ export default class ThingyScanner extends EventEmitter implements ThingyScanner
                     clearTimeout(this.timeoutHandle);
                     thingy52.stopDiscoverAll(onDiscoverWithFilter);
                 } else {
+                    // Avoid connecting twice.
+                    const state = device._peripheral.state;
+                    if (["connected", "connecting"].indexOf(state) > -1)
+                        return;
+
                     if (this.filter(device)) {
                         clearTimeout(this.timeoutHandle);
                         thingy52.stopDiscoverAll(onDiscoverWithFilter);
@@ -76,7 +82,7 @@ export default class ThingyScanner extends EventEmitter implements ThingyScanner
         if (!this.cancelled) {
             this.emit("scanning", true);
             this.discover().then(thingy => {
-                this.emit("discovered", thingy);
+                    this.emit("discovered", thingy);
             }, error => {
                 if (error instanceof ScanTimeout)
                     this.node.debug("timed out");

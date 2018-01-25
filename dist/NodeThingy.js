@@ -14,7 +14,7 @@ module.exports = (RED) => {
         }, this);
         scanner.on("scanning", () => this.manager.updateStatus(true));
         scanner.on("done", () => this.manager.updateStatus(false));
-        scanner.on("discovered", thingy => this.manager.addThingy(thingy).then(() => this.manager.updateStatus(false)));
+        scanner.on("discovered", thingy => this.manager.addThingy(thingy).then(() => this.manager.updateStatus(false), error => this.error("could not add the thingy: " + error.toString())));
         scanner.start();
         this.on("close", done => {
             scanner.stop();

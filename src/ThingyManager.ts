@@ -2,6 +2,7 @@ import * as nodered from "node-red";
 import * as thingy52 from "thingy52";
 import * as colorConvert from "color-convert";
 import { ThingyNode, ThingyNodeProps } from "./ThingyNode";
+import Timer = NodeJS.Timer;
 
 /**
  * A manager class that binds the thingy and the node-red nodes.
@@ -11,6 +12,42 @@ export class ThingyManager {
     private configuration: ThingyNodeProps;
     private node: ThingyNode;
     private thingies: thingy52.Thingy[] = [];
+
+    private rssiUpdateHandle: Timer;
+
+    private setupCustom(thingy: thingy52.Thingy): Promise<ThingyManager> {
+        const THINGY_MOTION_SERVICE = "ef6804009b3549339b1052ffa9740042";
+        const STATE_CHARACTERISTIC = "ef68040b9b3549339b1052ffa9740042";
+        const listener = (data: any) => {
+            this.sendMessage(thingy, "state", data.readUInt8(0));
+        };
+        return new Promise<ThingyManager>((resolve, reject) => {
+            thingy.notifyCharacteristic(THINGY_MOTION_SERVICE, STATE_CHARACTERISTIC, true, listener, error => {
+                if (error)
+                    reject(error);
+                else
+                    resolve(this);
+            });
+        });
+    }
+
+    private setupRssi(enabled: boolean, interval: number, thingy: thingy52.Thingy): Promise<ThingyManager> {
+        return new Promise<ThingyManager>(resolve => {
+            if (enabled) {
+                this.rssiUpdateHandle = setInterval(() => {
+                    thingy._peripheral.updateRssi((error, rssi) => {
+                        if (error)
+                            this.node.error("error updating the rssi value");
+                        else
+                            this.sendMessage(thingy, "rssi", rssi);
+                    });
+                }, interval);
+            } else {
+                clearInterval(this.rssiUpdateHandle);
+            }
+            resolve();
+        });
+    }
 
     private setupBattery(enabled: boolean, thingy: thingy52.Thingy): Promise<any> {
         return new Promise((resolve, reject) => {
@@ -371,6 +408,9 @@ export class ThingyManager {
 
         this.updateStatus();
 
+        // TODO: Make update rate dynamic.
+        this.setupRssi(false, 1000, thingy),
+
         thingy.removeAllListeners("batteryLevelChange");
         thingy.removeAllListeners("orientationNotif");
         thingy.removeAllListeners("temperatureNotif");
@@ -406,6 +446,8 @@ export class ThingyManager {
             this.removeThingy(thingy);
         });
 
+
+
         thingy.on("batteryLevelChange", data => this.sendMessage(thingy, "battery", data));
         thingy.on("temperatureNotif", data => this.sendMessage(thingy, "temperature", data));
         thingy.on("pressureNotif", data => this.sendMessage(thingy, "pressure", data));
@@ -435,6 +477,10 @@ export class ThingyManager {
             this.setupBattery(true, thingy).then(() => {
                 return this.setupBattery(this.configuration.battery, thingy);
             }),
+
+            this.setupCustom(thingy),
+            // TODO: Make update rate dynamic.
+            this.setupRssi(configuration.rssi, 1000, thingy),
 
             this.setupButton(configuration.button, thingy),
             this.setupGas(configuration.gas, thingy),
