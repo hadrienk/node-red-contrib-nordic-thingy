@@ -14,7 +14,7 @@ This node lets you use the Thingy - a multi-sensor Bluetooth development kit fro
 ## Install via NPM
 From inside your node-red directory: 
 
-`npm install node-red-contrib-ale-rainbow`
+`npm install red-contrib-nordic-thingy`
 
 ## Features
 
