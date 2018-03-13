@@ -16,18 +16,45 @@ export class ThingyManager {
     private rssiUpdateHandle: Timer;
 
     private setupCustom(thingy: thingy52.Thingy): Promise<ThingyManager> {
-        const THINGY_MOTION_SERVICE = "ef6804009b3549339b1052ffa9740042";
-        const STATE_CHARACTERISTIC = "ef68040b9b3549339b1052ffa9740042";
-        const listener = (data: any) => {
-            this.sendMessage(thingy, "state", data.readUInt8(0));
-        };
-        return new Promise<ThingyManager>((resolve, reject) => {
-            thingy.notifyCharacteristic(THINGY_MOTION_SERVICE, STATE_CHARACTERISTIC, true, listener, error => {
-                if (error)
-                    reject(error);
-                else
-                    resolve(this);
+        const THINGY_MOTION_SERVICE =    "ef6804009b3549339b1052ffa9740042";
+        const STATE_CHARACTERISTIC =     "ef68040b9b3549339b1052ffa9740042";
+        const LOW_POWER_CHARACTERISTIC = "ef68040c9b3549339b1052ffa9740042";
+
+        const custom_characteristics = [{
+            service: THINGY_MOTION_SERVICE,
+            characteristic: STATE_CHARACTERISTIC
+        }, {
+            service: THINGY_MOTION_SERVICE,
+            characteristic: LOW_POWER_CHARACTERISTIC
+        }];
+
+        const promises = [];
+        for (const {service, characteristic} of custom_characteristics) {
+            const promise = this.setupNotify(thingy, service, characteristic).catch(reason => {
+                this.node.error(`could not listen for ${service}:${characteristic}`);;
             });
+            promises.push(promise);
+        }
+
+        return Promise.all(promises).then(value => this);
+    }
+
+    private setupNotify(thingy: thingy52.Thingy, service: string, characteristic: string) {
+        return new Promise<ThingyManager>((resolve, reject) => {
+            thingy.notifyCharacteristic(
+                service,
+                characteristic,
+                true,
+                (data: any) => {
+                    this.sendMessage(thingy, characteristic, data);
+                },
+                (error: any) => {
+                    if (error)
+                        reject(error);
+                    else
+                        resolve(this);
+                }
+            );
         });
     }
 

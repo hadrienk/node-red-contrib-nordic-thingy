@@ -13,11 +13,29 @@ class ThingyManager {
     setupCustom(thingy) {
         const THINGY_MOTION_SERVICE = "ef6804009b3549339b1052ffa9740042";
         const STATE_CHARACTERISTIC = "ef68040b9b3549339b1052ffa9740042";
-        const listener = (data) => {
-            this.sendMessage(thingy, "state", data.readUInt8(0));
-        };
+        const LOW_POWER_CHARACTERISTIC = "ef68040c9b3549339b1052ffa9740042";
+        const custom_characteristics = [{
+                service: THINGY_MOTION_SERVICE,
+                characteristic: STATE_CHARACTERISTIC
+            }, {
+                service: THINGY_MOTION_SERVICE,
+                characteristic: LOW_POWER_CHARACTERISTIC
+            }];
+        const promises = [];
+        for (const { service, characteristic } of custom_characteristics) {
+            const promise = this.setupNotify(thingy, service, characteristic).catch(reason => {
+                this.node.error(`could not listen for ${service}:${characteristic}`);
+                ;
+            });
+            promises.push(promise);
+        }
+        return Promise.all(promises).then(value => this);
+    }
+    setupNotify(thingy, service, characteristic) {
         return new Promise((resolve, reject) => {
-            thingy.notifyCharacteristic(THINGY_MOTION_SERVICE, STATE_CHARACTERISTIC, true, listener, error => {
+            thingy.notifyCharacteristic(service, characteristic, true, (data) => {
+                this.sendMessage(thingy, characteristic, data);
+            }, (error) => {
                 if (error)
                     reject(error);
                 else
